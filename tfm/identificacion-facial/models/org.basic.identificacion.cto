@@ -1,0 +1,86 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Write your model definitions here
+ */
+
+namespace org.basic.identificacion
+
+enum Status {
+  o OK
+  o ERR
+  o PDTE
+}
+
+participant Empleado identified by dni {
+  o String dni
+  o String email
+  o Double balanceHoras
+}
+
+participant Empresa identified by cif {
+  o String cif
+  o String email
+}
+
+
+transaction FacialRecognition {
+  --> Registro registro
+  o DateTime fecha
+  o String etiqueta
+  o String hash_imagen
+}
+
+transaction ConfirmarIdentificacion{
+  --> Registro registro
+}
+
+transaction RechazarIdentificacion{
+  --> Registro registro
+}
+
+asset Registro identified by registroId {
+  o String registroId
+  o Status estado
+  o Double count
+  o FacialRecognition[] facialrecognitions optional
+  --> Contract contract
+}
+
+
+asset Contract identified by contractId {
+  o String contractId
+  --> Empleado empleado
+  --> Empresa empresa
+  o DateTime fecha
+  o Double hora_entrada
+  o Double hora_salida
+}
+
+
+transaction setupProject {
+}
+
+event EventoUmbralHoras {
+  o String mensaje
+  o Double horas
+  --> Registro registro
+}
+ 
+event EventoRechazarId {
+  o String mensaje
+  o Status estado
+  --> Registro registro
+}
